@@ -120,6 +120,7 @@ data class ActivityItem(
 data class AppPreferences(
     val themeMode: String = "dark", // "dark", "amoled", "light"
     val accentColorName: String = "violet", // "violet", "indigo", "emerald", "amber"
+    val blurIntensity: String = "high", // "high" (قوي), "low" (ضعيف/سلس), "off" (إيقاف)
     val density: String = "spacious", // "spacious", "standard", "compact"
     val cornerRadiusStyle: String = "rounded", // "rounded", "soft", "sharp"
     val verticalVideosEnabled: Boolean = true,

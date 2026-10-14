@@ -1,8 +1,7 @@
 package com.example.ui.screens
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
-import com.example.ui.components.GlassCard
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -18,14 +18,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.model.AppPreferences
-import com.example.model.NavTab
+import com.example.ui.components.CupertinoSegmentedControl
+import com.example.ui.components.CupertinoSwitch
 import com.example.ui.theme.*
 
+/**
+ * Apple iOS Inset Grouped Settings Screen
+ * Features intuitive controls, blur quality engine tuning (High/Low/Off), accent palettes,
+ * media toggles, and memory optimization with instant tactile feedback.
+ */
 @Composable
 fun SettingsScreen(
     preferences: AppPreferences,
@@ -36,726 +43,587 @@ fun SettingsScreen(
     onSavePreferences: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var expandedPriorityDropdown by remember { mutableStateOf(false) }
-
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
             .testTag("settings_screen_list"),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 84.dp, bottom = 110.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        // 1. Header Summary Banner
-        item {
-            GlassCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(18.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            Surface(
-                                color = PrimaryContainerViolet.copy(alpha = 0.2f),
-                                shape = CircleShape
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.AutoFixHigh,
-                                        contentDescription = null,
-                                        tint = PrimaryContainerViolet,
-                                        modifier = Modifier.size(14.dp)
-                                    )
-                                    Text(
-                                        text = "التحكم البصري المتقدم",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = PrimaryContainerViolet
-                                    )
-                                }
-                            }
-
-                            Text(
-                                text = "التخصيص والتحكم",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = OnSurfaceDark
-                            )
-
-                            Text(
-                                text = "قم بضبط وتشكيل تجربتك عبر المنصات لتلائم أسلوب عملك، من أطياف الإضاءة إلى كثافة القراءة والتغذية.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = OnSurfaceVariantDark,
-                                lineHeight = 22.sp
-                            )
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(PrimaryContainerViolet.copy(alpha = 0.2f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Palette,
-                                contentDescription = null,
-                                tint = PrimaryContainerViolet,
-                                modifier = Modifier.size(26.dp)
-                            )
-                        }
-                    }
-
-                    // Active Profile Capsule
-                    Surface(
-                        color = SurfaceContainer.copy(alpha = 0.6f),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(8.dp)
-                                        .clip(CircleShape)
-                                        .background(PrimaryContainerViolet)
-                                )
-                                Text(
-                                    text = "النمط الحالي: داكن معماري • متسع",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Medium,
-                                    color = OnSurfaceDark
-                                )
-                            }
-                            Surface(
-                                color = SurfaceContainerHighest,
-                                shape = RoundedCornerShape(6.dp)
-                            ) {
-                                Text(
-                                    text = "مُخصص",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = OnSurfaceVariantDark,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 2. Group 1: Appearance & Visual Tone
-        item {
-            GlassCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(18.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(34.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(SurfaceContainerHighest),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(imageVector = Icons.Default.Contrast, contentDescription = null, tint = PrimaryContainerViolet, modifier = Modifier.size(18.dp))
-                        }
-                        Column {
-                            Text(text = "المظهر العام", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = OnSurfaceDark)
-                            Text(text = "التحكم في مستويات الإضاءة، نغمة الألوان، وانحناء الأشكال", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariantDark)
-                        }
-                    }
-
-                    // Theme Mode Selector
-                    Text(text = "نمط العرض والسطوع", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Medium, color = OnSurfaceDark)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(SurfaceContainerLowest)
-                            .padding(4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        listOf(
-                            Triple("dark", "داكن فاخر", Icons.Default.DarkMode),
-                            Triple("amoled", "سواد عاتم", Icons.Default.Brightness1),
-                            Triple("light", "نهاري هادئ", Icons.Default.LightMode)
-                        ).forEach { (mode, label, icon) ->
-                            val isSelected = preferences.themeMode == mode
-                            Surface(
-                                color = if (isSelected) SurfaceContainerHigh else Color.Transparent,
-                                shape = RoundedCornerShape(10.dp),
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clickable { onUpdatePreferences { it.copy(themeMode = mode) } }
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(vertical = 10.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = icon,
-                                        contentDescription = label,
-                                        tint = if (isSelected) PrimaryContainerViolet else OnSurfaceVariantDark,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Text(
-                                        text = label,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
-                                        color = if (isSelected) PrimaryContainerViolet else OnSurfaceVariantDark
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    // Accent Color Selection
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "اللون المميز (Accent Glow)", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Medium, color = OnSurfaceDark)
-                        Text(
-                            text = when (preferences.accentColorName) {
-                                "violet" -> "البنفسجي المعماري"
-                                "indigo" -> "الأزرق النيلي"
-                                "emerald" -> "الزمردي الهادئ"
-                                else -> "العنبري الدافئ"
-                            },
-                            style = MaterialTheme.typography.labelSmall,
-                            color = PrimaryContainerViolet
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(SurfaceContainerLow)
-                            .padding(12.dp),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        listOf(
-                            Pair("violet", PrimaryContainerViolet),
-                            Pair("indigo", AccentIndigo),
-                            Pair("emerald", AccentEmerald),
-                            Pair("amber", AccentAmber)
-                        ).forEach { (colorName, colorValue) ->
-                            val isSelected = preferences.accentColorName == colorName
-                            Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .background(colorValue)
-                                    .clickable { onUpdatePreferences { it.copy(accentColorName = colorName) } }
-                                    .then(if (isSelected) Modifier.border(2.dp, Color.White, CircleShape) else Modifier),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (isSelected) {
-                                    Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = CanvasDark, modifier = Modifier.size(18.dp))
-                                }
-                            }
-                        }
-                    }
-
-                    // Content Density & Card Corners Grid
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        // Density
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Text(text = "كثافة المحتوى", style = MaterialTheme.typography.labelMedium, color = OnSurfaceDark)
-                            Surface(
-                                color = SurfaceContainerLow,
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Column(modifier = Modifier.padding(4.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                    listOf(
-                                        Pair("spacious", "مريح (Spacious)"),
-                                        Pair("standard", "قياسي (Normal)"),
-                                        Pair("compact", "مضغوط (Compact)")
-                                    ).forEach { (denseKey, label) ->
-                                        val isSelected = preferences.density == denseKey
-                                        Surface(
-                                            color = if (isSelected) SurfaceContainerHigh else Color.Transparent,
-                                            shape = RoundedCornerShape(8.dp),
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .clickable { onUpdatePreferences { it.copy(density = denseKey) } }
-                                        ) {
-                                            Text(
-                                                text = label,
-                                                style = MaterialTheme.typography.labelSmall,
-                                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                                                color = if (isSelected) PrimaryContainerViolet else OnSurfaceVariantDark,
-                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 7.dp)
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        // Corners
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Text(text = "هندسة البطاقات", style = MaterialTheme.typography.labelMedium, color = OnSurfaceDark)
-                            Surface(
-                                color = SurfaceContainerLow,
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Column(modifier = Modifier.padding(4.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                    listOf(
-                                        Pair("rounded", "منحنية (Rounded)"),
-                                        Pair("soft", "فائقة الانحناء (Soft)"),
-                                        Pair("sharp", "حادة (Sharp)")
-                                    ).forEach { (cornerKey, label) ->
-                                        val isSelected = preferences.cornerRadiusStyle == cornerKey
-                                        Surface(
-                                            color = if (isSelected) SurfaceContainerHigh else Color.Transparent,
-                                            shape = RoundedCornerShape(8.dp),
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .clickable { onUpdatePreferences { it.copy(cornerRadiusStyle = cornerKey) } }
-                                        ) {
-                                            Text(
-                                                text = label,
-                                                style = MaterialTheme.typography.labelSmall,
-                                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                                                color = if (isSelected) PrimaryContainerViolet else OnSurfaceVariantDark,
-                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 7.dp)
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 3. Group 2: Feed Customization & Flow
-        item {
-            GlassCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(18.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(34.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(SurfaceContainerHighest),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(imageVector = Icons.Default.DynamicFeed, contentDescription = null, tint = PrimaryContainerViolet, modifier = Modifier.size(18.dp))
-                        }
-                        Column {
-                            Text(text = "خلاصة المنشورات والوسائط", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = OnSurfaceDark)
-                            Text(text = "التحكم في خوارزمية الجمع، الاستعراض، والأسبقية", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariantDark)
-                        }
-                    }
-
-                    // Toggles
-                    SettingToggleRow(
-                        icon = Icons.Default.Smartphone,
-                        title = "عرض الفيديوهات العمودية",
-                        subtitle = "دمج Shorts و Reels في الخلاصة تلقائياً",
-                        checked = preferences.verticalVideosEnabled,
-                        onCheckedChange = { chk -> onUpdatePreferences { it.copy(verticalVideosEnabled = chk) } }
-                    )
-
-                    SettingToggleRow(
-                        icon = Icons.Default.VolumeOff,
-                        title = "معاينة متحركة صامتة",
-                        subtitle = "تشغيل المقاطع دون صوت عند التمرير السلس",
-                        checked = preferences.silentPreviewEnabled,
-                        onCheckedChange = { chk -> onUpdatePreferences { it.copy(silentPreviewEnabled = chk) } }
-                    )
-
-                    SettingToggleRow(
-                        icon = Icons.Default.FilterAlt,
-                        title = "إخفاء التكرار العابر للشبكات",
-                        subtitle = "تجاهل المنشورات المشتركة بين منصات متعددة",
-                        checked = preferences.hideDuplicates,
-                        onCheckedChange = { chk -> onUpdatePreferences { it.copy(hideDuplicates = chk) } }
-                    )
-
-                    // Feed Priority Dropdown
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(text = "معيار فرز وترتيب الأسبقية", style = MaterialTheme.typography.labelMedium, color = OnSurfaceDark)
-                        Box {
-                            Surface(
-                                color = SurfaceContainerLowest,
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { expandedPriorityDropdown = !expandedPriorityDropdown }
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = when (preferences.feedPriority) {
-                                            "chronological" -> "الأحدث زمنياً (تدفق آني متسلسل)"
-                                            "engagement" -> "الأعلى تفاعلاً ومشاركة (Top Viral)"
-                                            "affinity" -> "المنصات المفضلة أولاً (حسب الأولويات)"
-                                            else -> "المنشورات الغنية بالصور ومقاطع الفيديو أولاً"
-                                        },
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = OnSurfaceDark
-                                    )
-                                    Icon(imageVector = Icons.Default.ExpandMore, contentDescription = null, tint = OnSurfaceVariantDark)
-                                }
-                            }
-
-                            DropdownMenu(
-                                expanded = expandedPriorityDropdown,
-                                onDismissRequest = { expandedPriorityDropdown = false },
-                                modifier = Modifier.background(SurfaceContainerHigh)
-                            ) {
-                                listOf(
-                                    Pair("chronological", "الأحدث زمنياً (تدفق آني متسلسل)"),
-                                    Pair("engagement", "الأعلى تفاعلاً ومشاركة (Top Viral)"),
-                                    Pair("affinity", "المنصات المفضلة أولاً (حسب الأولويات)"),
-                                    Pair("media", "المنشورات الغنية بالصور ومقاطع الفيديو أولاً")
-                                ).forEach { (key, label) ->
-                                    DropdownMenuItem(
-                                        text = { Text(label, color = OnSurfaceDark) },
-                                        onClick = {
-                                            onUpdatePreferences { it.copy(feedPriority = key) }
-                                            expandedPriorityDropdown = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 4. Group 3: Layout & Navigation
-        item {
-            GlassCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(18.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(34.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(SurfaceContainerHighest),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(imageVector = Icons.Default.Tab, contentDescription = null, tint = PrimaryContainerViolet, modifier = Modifier.size(18.dp))
-                        }
-                        Column {
-                            Text(text = "المسارات والتنقل", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = OnSurfaceDark)
-                            Text(text = "تخصيص الشاشة الافتراضية وهيكلة أقسام الشريط", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariantDark)
-                        }
-                    }
-
-                    Text(text = "واجهة الإطلاق التلقائي", style = MaterialTheme.typography.labelMedium, color = OnSurfaceDark)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(SurfaceContainerLow)
-                            .padding(4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        listOf(
-                            Triple(NavTab.HOME, "الرئيسية", Icons.Default.DynamicFeed),
-                            Triple(NavTab.SPACES, "مساحتي", Icons.Default.DashboardCustomize),
-                            Triple(NavTab.PLATFORMS, "المنصات", Icons.Default.Share)
-                        ).forEach { (tab, label, icon) ->
-                            val isSelected = preferences.startupScreen == tab
-                            Surface(
-                                color = if (isSelected) SurfaceContainerHigh else Color.Transparent,
-                                shape = RoundedCornerShape(8.dp),
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clickable { onUpdatePreferences { it.copy(startupScreen = tab) } }
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(vertical = 8.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Icon(imageVector = icon, contentDescription = label, tint = if (isSelected) PrimaryContainerViolet else OnSurfaceVariantDark, modifier = Modifier.size(20.dp))
-                                    Text(text = label, style = MaterialTheme.typography.labelSmall, color = if (isSelected) PrimaryContainerViolet else OnSurfaceVariantDark)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 5. Group 4: Accounts, Storage & Privacy
-        item {
-            GlassCard(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(18.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(34.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(SurfaceContainerHighest),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(imageVector = Icons.Default.Security, contentDescription = null, tint = PrimaryContainerViolet, modifier = Modifier.size(18.dp))
-                        }
-                        Column {
-                            Text(text = "الحسابات والبيانات المحلية", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = OnSurfaceDark)
-                            Text(text = "سلامة التخزين المؤقت، سجلات البحث وأذونات الربط", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariantDark)
-                        }
-                    }
-
-                    // Media cache
-                    Surface(
-                        color = SurfaceContainerLow,
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Icon(imageVector = Icons.Default.Cached, contentDescription = null, tint = OnSurfaceVariantDark, modifier = Modifier.size(20.dp))
-                                Column {
-                                    Text(text = "الذاكرة المؤقتة للوسائط", style = MaterialTheme.typography.titleSmall, color = OnSurfaceDark)
-                                    Text(text = "${preferences.cacheSizeMb} ميغابايت مستهلكة محلياً", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariantDark)
-                                }
-                            }
-                            Button(
-                                onClick = onClearCache,
-                                colors = ButtonDefaults.buttonColors(containerColor = SurfaceContainerHighest, contentColor = OnSurfaceDark),
-                                shape = RoundedCornerShape(8.dp),
-                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
-                            ) {
-                                Text(text = "تفريغ الآن", style = MaterialTheme.typography.labelSmall)
-                            }
-                        }
-                    }
-
-                    // Search history
-                    Surface(
-                        color = SurfaceContainerLow,
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Icon(imageVector = Icons.Default.ManageSearch, contentDescription = null, tint = OnSurfaceVariantDark, modifier = Modifier.size(20.dp))
-                                Column {
-                                    Text(text = "سجل البحث والاستكشاف", style = MaterialTheme.typography.titleSmall, color = OnSurfaceDark)
-                                    Text(text = "حذف الاستعلامات السابقة المحفوظة", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariantDark)
-                                }
-                            }
-                            Button(
-                                onClick = onClearSearchHistory,
-                                colors = ButtonDefaults.buttonColors(containerColor = SurfaceContainerHighest, contentColor = Color(0xFFEF4444)),
-                                shape = RoundedCornerShape(8.dp),
-                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
-                            ) {
-                                Text(text = "مسح السجل", style = MaterialTheme.typography.labelSmall)
-                            }
-                        }
-                    }
-
-                    // OAuth tokens
-                    Surface(
-                        color = SurfaceContainerLow,
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Icon(imageVector = Icons.Default.Key, contentDescription = null, tint = PrimaryContainerViolet, modifier = Modifier.size(20.dp))
-                                Column {
-                                    Text(text = "أذونات المنصات المربوطة (OAuth)", style = MaterialTheme.typography.titleSmall, color = OnSurfaceDark)
-                                    Text(text = "4 شبكات متصلة بمفاتيح تشفير آمنة", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariantDark)
-                                }
-                            }
-                            Icon(imageVector = Icons.Default.ChevronLeft, contentDescription = null, tint = OnSurfaceVariantDark)
-                        }
-                    }
-                }
-            }
-        }
-
-        // 6. Action Submission Buttons
+        // 1. iOS Large Navigation Title
         item {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 6.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                    .padding(top = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Button(
-                    onClick = onSavePreferences,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = PrimaryContainerViolet,
-                        contentColor = OnPrimaryContainerViolet
-                    ),
-                    shape = RoundedCornerShape(14.dp),
+                Text(
+                    text = "الإعدادات والتفضيلات",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    letterSpacing = (-0.6).sp
+                )
+                Text(
+                    text = "تحكم بالمظهر، دقة التغبيش الزجاجي، وتجربة تدفق المحتوى بأسلوب أبل",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AppleSystemGray
+                )
+            }
+        }
+
+        // 2. Section: Appearance & Blur Engine
+        item {
+            SettingsSectionHeader(title = "المظهر ومحرك التغبيش الزجاجي (BLUR)")
+            Spacer(modifier = Modifier.height(8.dp))
+            SettingsGroupedCard {
+                // Theme Mode Segmented Control
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
-                        .testTag("btn_save_preferences")
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(imageVector = Icons.Default.DoneAll, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Text(text = "حفظ وتطبيق التفضيلات", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                        SettingsRowLabel(
+                            icon = Icons.Default.DarkMode,
+                            iconBg = AppleSystemIndigo,
+                            title = "نمط العرض"
+                        )
+                        Text(
+                            text = if (preferences.themeMode == "light") "نهاري نقي" else "داكن OLED فاخر",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = AppleSystemGray,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    CupertinoSegmentedControl(
+                        items = listOf("dark", "light"),
+                        selectedItem = preferences.themeMode,
+                        onItemSelected = { mode -> onUpdatePreferences { it.copy(themeMode = mode) } },
+                        itemLabel = { if (it == "dark") "داكن OLED" else "فاتح كلاسيكي" },
+                        itemTagPrefix = "theme_mode"
+                    )
+                }
+
+                SettingsDivider()
+
+                // NEW: Blur & Glass Intensity Selector (ضعيف ولا قوي ولا معطل)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SettingsRowLabel(
+                            icon = Icons.Default.BlurOn,
+                            iconBg = AppleSystemBlue,
+                            title = "دقة تأثير الـ Blur الزجاجي",
+                            subtitle = "مخصص ليتناسب مع قوة المعالج والبطارية"
+                        )
+                        Text(
+                            text = when (preferences.blurIntensity) {
+                                "high" -> "قوي"
+                                "low" -> "خفيف"
+                                else -> "معطل"
+                            },
+                            style = MaterialTheme.typography.labelMedium,
+                            color = AppleSystemBlue,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    CupertinoSegmentedControl(
+                        items = listOf("high", "low", "off"),
+                        selectedItem = preferences.blurIntensity,
+                        onItemSelected = { intensity ->
+                            onUpdatePreferences { it.copy(blurIntensity = intensity) }
+                        },
+                        itemLabel = {
+                            when (it) {
+                                "high" -> "قوي (أجهزة قوية)"
+                                "low" -> "خفيف (متوسطة)"
+                                else -> "معطل (اقتصادية)"
+                            }
+                        },
+                        itemTagPrefix = "blur_intensity"
+                    )
+
+                    // Helper badge explaining device benefit
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(AppleSystemGray5.copy(alpha = 0.60f))
+                            .padding(horizontal = 12.dp, vertical = 8.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = when (preferences.blurIntensity) {
+                                    "high" -> Icons.Default.AutoAwesome
+                                    "low" -> Icons.Default.Speed
+                                    else -> Icons.Default.BatteryChargingFull
+                                },
+                                contentDescription = null,
+                                tint = AppleSystemBlue,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = when (preferences.blurIntensity) {
+                                    "high" -> "تأثير ضبابي كامل 24dp وعمق ضوئي عالي (مظهر فاخر للأجهزة القوية)"
+                                    "low" -> "تأثير ضبابي مخفف 8dp فائق السلاسة (متوازن للهواتف المتوسطة)"
+                                    else -> "واجهات صلبة وسريعة بدون معالجة ضبابية (أعلى أداء وتوفير للأجهزة الضعيفة)"
+                                },
+                                style = MaterialTheme.typography.labelSmall,
+                                color = AppleSystemGray,
+                                lineHeight = 16.sp
+                            )
+                        }
                     }
                 }
 
-                TextButton(
-                    onClick = onResetDefaults,
-                    modifier = Modifier.fillMaxWidth()
+                SettingsDivider()
+
+                // Accent Color Selector (5 iOS Palettes)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
+                    SettingsRowLabel(
+                        icon = Icons.Default.Palette,
+                        iconBg = AppleSystemPurple,
+                        title = "اللون المميز (Accent Color)",
+                        subtitle = "لون الأزرار والمؤشرات واللمسات التفاعلية"
+                    )
+
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(imageVector = Icons.Default.RestartAlt, contentDescription = null, tint = OnSurfaceVariantDark, modifier = Modifier.size(18.dp))
-                        Text(text = "استعادة الضبط الافتراضي للمنصة", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariantDark)
+                        listOf(
+                            Triple("violet", "أزرق أبل", AppleSystemBlue),
+                            Triple("indigo", "نيلي", AppleSystemIndigo),
+                            Triple("emerald", "زمردي", AppleSystemGreen),
+                            Triple("amber", "عنبري", AppleSystemOrange),
+                            Triple("purple", "أرجواني", AppleSystemPurple)
+                        ).forEach { (colorName, label, color) ->
+                            val isSelected = preferences.accentColorName == colorName
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(if (isSelected) AppleSystemGray5 else Color.Transparent)
+                                    .border(
+                                        if (isSelected) 1.dp else 0.dp,
+                                        if (isSelected) color else Color.Transparent,
+                                        RoundedCornerShape(12.dp)
+                                    )
+                                    .clickable { onUpdatePreferences { it.copy(accentColorName = colorName) } }
+                                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(18.dp)
+                                            .clip(CircleShape)
+                                            .background(color)
+                                            .border(
+                                                if (isSelected) 2.dp else 0.dp,
+                                                Color.White,
+                                                CircleShape
+                                            )
+                                    )
+                                    Text(
+                                        text = label,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        color = if (isSelected) Color.White else AppleSystemGray,
+                                        fontSize = 11.sp
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
+            }
+        }
+
+        // 3. Section: Content & Media Feed Behavior
+        item {
+            SettingsSectionHeader(title = "سلوك التغذية وتدفق الوسائط")
+            Spacer(modifier = Modifier.height(8.dp))
+            SettingsGroupedCard {
+                // Vertical Videos Toggle
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SettingsRowLabel(
+                        icon = Icons.Default.PlayCircle,
+                        iconBg = ColorPlatformTikTok,
+                        title = "تشغيل الفيديوهات الرأسية",
+                        subtitle = "عرض مقاطع تيك توك وريلز مدمجة بسلاسة"
+                    )
+                    CupertinoSwitch(
+                        checked = preferences.verticalVideosEnabled,
+                        onCheckedChange = { checked ->
+                            onUpdatePreferences { it.copy(verticalVideosEnabled = checked) }
+                        },
+                        activeColor = AppleSystemGreen,
+                        testTag = "switch_vertical_videos"
+                    )
+                }
+
+                SettingsDivider()
+
+                // Silent Preview Toggle
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SettingsRowLabel(
+                        icon = Icons.Default.VolumeOff,
+                        iconBg = AppleSystemOrange,
+                        title = "معاينة صامتة تلقائية",
+                        subtitle = "كتم الصوت افتراضياً أثناء التمرير في التغذية"
+                    )
+                    CupertinoSwitch(
+                        checked = preferences.silentPreviewEnabled,
+                        onCheckedChange = { checked ->
+                            onUpdatePreferences { it.copy(silentPreviewEnabled = checked) }
+                        },
+                        activeColor = AppleSystemGreen,
+                        testTag = "switch_silent_preview"
+                    )
+                }
+
+                SettingsDivider()
+
+                // Hide Duplicates Toggle
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SettingsRowLabel(
+                        icon = Icons.Default.FilterAlt,
+                        iconBg = AppleSystemTeal,
+                        title = "منع وتصفية التكرار",
+                        subtitle = "دمج المنشورات المتشابهة تلقائياً بين المنصات"
+                    )
+                    CupertinoSwitch(
+                        checked = preferences.hideDuplicates,
+                        onCheckedChange = { checked ->
+                            onUpdatePreferences { it.copy(hideDuplicates = checked) }
+                        },
+                        activeColor = AppleSystemGreen,
+                        testTag = "switch_hide_duplicates"
+                    )
+                }
+            }
+        }
+
+        // 4. Section: Storage, Cache & Maintenance
+        item {
+            SettingsSectionHeader(title = "الأداء والذاكرة المؤقتة")
+            Spacer(modifier = Modifier.height(8.dp))
+            SettingsGroupedCard {
+                // Clear Cache Row
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onClearCache() }
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SettingsRowLabel(
+                        icon = Icons.Default.Storage,
+                        iconBg = AppleSystemGray3,
+                        title = "مسح الذاكرة المؤقتة",
+                        subtitle = if (preferences.cacheSizeMb > 0) "${preferences.cacheSizeMb} ميغابايت مستخدمة للمعاينة" else "الذاكرة المؤقتة فارغة ونظيفة"
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = if (preferences.cacheSizeMb > 0) "تنظيف" else "مفرغة",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (preferences.cacheSizeMb > 0) AppleSystemBlue else AppleSystemGray,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = AppleSystemGray,
+                            modifier = Modifier.size(13.dp)
+                        )
+                    }
+                }
+
+                SettingsDivider()
+
+                // Clear Search History
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onClearSearchHistory() }
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SettingsRowLabel(
+                        icon = Icons.Default.History,
+                        iconBg = AppleSystemGray4,
+                        title = "مسح سجل البحث والكلمات المفتاحية",
+                        subtitle = "حذف سجل الاستكشاف المحفوظ محلياً"
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "مسح",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = AppleSystemGray,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = AppleSystemGray,
+                            modifier = Modifier.size(13.dp)
+                        )
+                    }
+                }
+
+                SettingsDivider()
+
+                // Reset Defaults
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onResetDefaults() }
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SettingsRowLabel(
+                        icon = Icons.Default.Restore,
+                        iconBg = AppleSystemRed,
+                        title = "استعادة الإعدادات الافتراضية",
+                        subtitle = "إعادة ضبط السمات والتفضيلات للوضع الأصلي"
+                    )
+                    Text(
+                        text = "إعادة ضبط",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AppleSystemRed,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+
+        // 5. Action Button: Save & Apply Preferences
+        item {
+            val accentColor = when (preferences.accentColorName) {
+                "indigo" -> AppleSystemIndigo
+                "emerald" -> AppleSystemGreen
+                "amber" -> AppleSystemOrange
+                "purple" -> AppleSystemPurple
+                else -> AppleSystemBlue
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(accentColor)
+                    .clickable { onSavePreferences() }
+                    .padding(vertical = 14.dp)
+                    .testTag("btn_save_preferences"),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        text = "حفظ وتطبيق التغييرات فورا",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        letterSpacing = (-0.3).sp
+                    )
+                }
+            }
+        }
+
+        // 6. Section: About App Branding (iOS App Info with modern typography)
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp, bottom = 12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(AppleSystemBlue),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Hub,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+                    Text(
+                        text = "SocialHub • الإصدار 2.5",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+                Text(
+                    text = "مصمم بأسلوب Apple Human Interface Guidelines مع معمارية OLED ومحرك الزجاج السائل",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = AppleSystemGray,
+                    fontSize = 11.sp
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Reusable Apple Inset Grouped Container Card
+ */
+@Composable
+private fun SettingsGroupedCard(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(AppleSystemGray6.copy(alpha = 0.88f))
+            .border(0.5.dp, GlassBorderSubtle, RoundedCornerShape(20.dp)),
+        content = content
+    )
+}
+
+@Composable
+private fun SettingsSectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.labelMedium,
+        fontWeight = FontWeight.Bold,
+        color = AppleSystemGray,
+        letterSpacing = 0.6.sp,
+        modifier = Modifier.padding(horizontal = 4.dp)
+    )
+}
+
+@Composable
+private fun SettingsRowLabel(
+    icon: ImageVector,
+    iconBg: Color,
+    title: String,
+    subtitle: String? = null
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxWidth(if (subtitle == null) 0.60f else 0.80f)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(iconBg),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(18.dp)
+            )
+        }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(1.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White
+            )
+            if (subtitle != null) {
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = AppleSystemGray,
+                    fontSize = 11.sp,
+                    lineHeight = 14.sp
+                )
             }
         }
     }
 }
 
 @Composable
-fun SettingToggleRow(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    title: String,
-    subtitle: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Surface(
-        color = GlassSurfacePill,
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(0.5.dp, GlassBorderSubtle),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(SurfaceContainer),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(imageVector = icon, contentDescription = null, tint = OnSurfaceVariantDark, modifier = Modifier.size(18.dp))
-                }
-                Column {
-                    Text(text = title, style = MaterialTheme.typography.titleSmall, color = OnSurfaceDark)
-                    Text(text = subtitle, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariantDark)
-                }
-            }
-
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = OnPrimaryContainerViolet,
-                    checkedTrackColor = PrimaryContainerViolet,
-                    uncheckedThumbColor = OnSurfaceVariantDark,
-                    uncheckedTrackColor = SurfaceContainerHighest
-                )
-            )
-        }
-    }
+private fun SettingsDivider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp)
+            .height(0.5.dp)
+            .background(AppleSystemGray5)
+    )
 }

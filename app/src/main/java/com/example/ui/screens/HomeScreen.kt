@@ -2,9 +2,7 @@ package com.example.ui.screens
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import com.example.ui.components.GlassCard
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -33,6 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.model.*
+import com.example.ui.components.CupertinoSegmentedControl
+import com.example.ui.components.GlassCard
+import com.example.ui.components.PlatformBadge
 import com.example.ui.theme.*
 
 @Composable
@@ -67,110 +68,103 @@ fun HomeScreen(
         modifier = modifier
             .fillMaxSize()
             .testTag("home_feed_list"),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 82.dp, bottom = 104.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        // 1. Top Greeting & Feed Controls
+        // 1. iOS Large Title & Action Header
         item {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(top = 4.dp, bottom = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .clip(CircleShape)
-                                .background(PrimaryContainerViolet)
-                        )
-                        Text(
-                            text = "تزامن حي وفعال",
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.SemiBold,
-                            color = PrimaryContainerViolet,
-                            letterSpacing = 0.5.sp
-                        )
-                    }
-                    Text(
-                        text = "مساحتك الاجتماعية",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = OnSurfaceDark
-                    )
-                }
-
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(7.dp)
+                                    .clip(CircleShape)
+                                    .background(AppleSystemGreen)
+                            )
+                            Text(
+                                text = "مُحدّث بالكامل • متزامن",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = AppleSystemGreen,
+                                fontSize = 11.sp
+                            )
+                        }
+                        Text(
+                            text = "مساحتك الاجتماعية",
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            letterSpacing = (-0.5).sp
+                        )
+                    }
+
+                    // iOS Circular Action Pill
                     IconButton(
                         onClick = onRefreshFeed,
                         modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(SurfaceContainer)
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(AppleSystemGray6)
+                            .border(0.5.dp, GlassBorderSubtle, CircleShape)
                             .testTag("home_refresh_btn")
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Sync,
                             contentDescription = "تحديث المحتوى",
-                            tint = OnSurfaceVariantDark,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .height(40.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(SurfaceContainer)
-                            .clickable { }
-                            .padding(horizontal = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Tune,
-                            contentDescription = "تصفية",
-                            tint = PrimaryContainerViolet,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Text(
-                            text = "تصفية",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Medium,
-                            color = OnSurfaceDark
+                            tint = AppleSystemBlue,
+                            modifier = Modifier.size(19.dp)
                         )
                     }
                 }
+
+                // 2. iOS Segmented Control for Categories (الكل، منشورات، فيديوهات، المحفوظات)
+                CupertinoSegmentedControl(
+                    items = listOf(
+                        FeedCategory.ALL,
+                        FeedCategory.POSTS,
+                        FeedCategory.VIDEOS,
+                        FeedCategory.BOOKMARKS
+                    ),
+                    selectedItem = selectedCategory,
+                    onItemSelected = onSelectCategory,
+                    itemLabel = { it.label },
+                    itemTagPrefix = "cat"
+                )
             }
         }
 
-        // 2. Platform Selector (Horizontal Scrollable Strip)
+        // 3. Platform Strip (Apple Rounded Squircle Chips)
         item {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(vertical = 2.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 PlatformChip(
                     label = "الكل",
                     isSelected = selectedPlatform == PlatformType.ALL,
-                    indicatorColor = PrimaryContainerViolet,
+                    indicatorColor = AppleSystemBlue,
                     icon = Icons.Default.Widgets,
                     onClick = { onSelectPlatform(PlatformType.ALL) }
                 )
                 PlatformChip(
-                    label = "إكس",
+                    label = "𝕏",
                     isSelected = selectedPlatform == PlatformType.X,
                     indicatorColor = ColorPlatformX,
                     icon = Icons.Default.Tag,
@@ -207,38 +201,7 @@ fun HomeScreen(
             }
         }
 
-        // 3. Feed Category Pills
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(vertical = 2.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                FeedCategory.entries.forEach { cat ->
-                    val isSelected = selectedCategory == cat
-                    Surface(
-                        color = if (isSelected) PrimaryContainerViolet.copy(alpha = 0.25f) else GlassSurfacePill,
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(0.5.dp, if (isSelected) PrimaryContainerViolet.copy(alpha = 0.5f) else GlassBorderSubtle),
-                        modifier = Modifier
-                            .clickable { onSelectCategory(cat) }
-                            .padding(0.dp)
-                    ) {
-                        Text(
-                            text = cat.label,
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                            color = if (isSelected) PrimaryContainerViolet else OnSurfaceVariantDark,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
-                        )
-                    }
-                }
-            }
-        }
-
-        // 4. Feed Items
+        // 4. Feed Items List
         items(filteredItems, key = { it.id }) { item ->
             when (item.mediaType) {
                 MediaType.VIDEO_VERTICAL -> TikTokFeedCard(
@@ -266,12 +229,12 @@ fun HomeScreen(
             }
         }
 
-        // 5. Completion Footer
+        // 5. Completion State (iOS Inset Card)
         item {
             GlassCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp)
+                    .padding(vertical = 8.dp)
             ) {
                 Column(
                     modifier = Modifier
@@ -284,27 +247,27 @@ fun HomeScreen(
                         modifier = Modifier
                             .size(42.dp)
                             .clip(CircleShape)
-                            .background(GlassSurfacePill)
-                            .border(0.5.dp, GlassBorderSubtle, CircleShape),
+                            .background(AppleSystemGreen.copy(alpha = 0.15f))
+                            .border(0.5.dp, AppleSystemGreen.copy(alpha = 0.35f), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.DoneAll,
+                            imageVector = Icons.Filled.Check,
                             contentDescription = "مكتمل",
-                            tint = PrimaryContainerViolet,
+                            tint = AppleSystemGreen,
                             modifier = Modifier.size(22.dp)
                         )
                     }
                     Text(
-                        text = "أنت على اطلاع بكل جديد!",
+                        text = "أنت على اطلاع بكل جديد",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = OnSurfaceDark
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
                     )
                     Text(
                         text = "تمت مزامنة جميع الحسابات المربوطة بنجاح، استمتع بيومك الرقمي المنظم.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = OnSurfaceVariantDark
+                        color = AppleSystemGray
                     )
                 }
             }
@@ -321,43 +284,45 @@ fun PlatformChip(
     onClick: () -> Unit
 ) {
     val bgColor by animateColorAsState(
-        targetValue = if (isSelected) PrimaryContainerViolet else GlassSurfacePill,
-        animationSpec = tween(200)
+        targetValue = if (isSelected) AppleSystemBlue else AppleSystemGray6,
+        animationSpec = tween(180),
+        label = "chipBg"
     )
-    val textColor = if (isSelected) OnPrimaryContainerViolet else OnSurfaceDark
+    val contentColor = if (isSelected) Color.White else AppleSystemGray
 
     Row(
         modifier = Modifier
-            .height(38.dp)
-            .clip(CircleShape)
+            .height(36.dp)
+            .clip(RoundedCornerShape(12.dp))
             .background(bgColor)
             .border(
                 0.5.dp,
-                if (isSelected) GlassBorder else GlassBorderSubtle,
-                CircleShape
+                if (isSelected) Color.Transparent else GlassBorderSubtle,
+                RoundedCornerShape(12.dp)
             )
             .clickable(onClick = onClick)
-            .padding(horizontal = 14.dp),
+            .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(7.dp)
+                .size(6.dp)
                 .clip(CircleShape)
-                .background(if (isSelected) OnPrimaryContainerViolet else indicatorColor)
+                .background(if (isSelected) Color.White else indicatorColor)
         )
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = textColor,
-            modifier = Modifier.size(15.dp)
+            tint = contentColor,
+            modifier = Modifier.size(14.dp)
         )
         Text(
             text = label,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Medium,
-            color = textColor
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
+            color = contentColor,
+            fontSize = 12.sp
         )
     }
 }
@@ -372,13 +337,13 @@ fun TikTokFeedCard(
         modifier = Modifier
             .fillMaxWidth()
             .testTag("feed_item_tiktok"),
-        backgroundColor = GlassSurfaceDark
+        backgroundColor = AppleSystemGray6
     ) {
         Column(
             modifier = Modifier.padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Header
+            // Header: Author Avatar, Verified badge, Time
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -388,7 +353,7 @@ fun TikTokFeedCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Box(modifier = Modifier.size(42.dp)) {
+                    Box(modifier = Modifier.size(40.dp)) {
                         AsyncImage(
                             model = item.authorAvatarUrl,
                             contentDescription = item.authorName,
@@ -396,20 +361,21 @@ fun TikTokFeedCard(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(CircleShape)
+                                .border(0.5.dp, GlassBorderSubtle, CircleShape)
                         )
                         Box(
                             modifier = Modifier
                                 .align(Alignment.BottomStart)
-                                .size(16.dp)
+                                .size(15.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF082F49)),
+                                .background(Color(0xFF00F2FE)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Audiotrack,
                                 contentDescription = null,
-                                tint = ColorPlatformTikTok,
-                                modifier = Modifier.size(10.dp)
+                                tint = Color.Black,
+                                modifier = Modifier.size(9.dp)
                             )
                         }
                     }
@@ -423,13 +389,13 @@ fun TikTokFeedCard(
                                 text = item.authorName,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                color = OnSurfaceDark
+                                color = Color.White
                             )
                             if (item.isVerified) {
                                 Icon(
                                     imageVector = Icons.Filled.Verified,
                                     contentDescription = "موثق",
-                                    tint = ColorPlatformTikTok,
+                                    tint = AppleSystemBlue,
                                     modifier = Modifier.size(15.dp)
                                 )
                             }
@@ -437,7 +403,7 @@ fun TikTokFeedCard(
                         Text(
                             text = item.timeAgo,
                             style = MaterialTheme.typography.labelSmall,
-                            color = OnSurfaceVariantDark
+                            color = AppleSystemGray
                         )
                     }
                 }
@@ -447,27 +413,19 @@ fun TikTokFeedCard(
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     item.trendingBadge?.let {
-                        Surface(
-                            color = SurfaceContainer,
-                            shape = CircleShape
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(ColorPlatformTikTok.copy(alpha = 0.15f))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
                         ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.TrendingUp,
-                                    contentDescription = null,
-                                    tint = ColorPlatformTikTok,
-                                    modifier = Modifier.size(13.dp)
-                                )
-                                Text(
-                                    text = it,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = ColorPlatformTikTok
-                                )
-                            }
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = ColorPlatformTikTok,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 11.sp
+                            )
                         }
                     }
                     IconButton(
@@ -475,9 +433,9 @@ fun TikTokFeedCard(
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.MoreVert,
+                            imageVector = Icons.Filled.MoreHoriz,
                             contentDescription = "خيارات",
-                            tint = OnSurfaceVariantDark,
+                            tint = AppleSystemGray,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -489,8 +447,9 @@ fun TikTokFeedCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(9f / 13f)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(SurfaceContainerHighest)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(AppleSystemGray5)
+                    .border(0.5.dp, GlassBorderSubtle, RoundedCornerShape(18.dp))
             ) {
                 AsyncImage(
                     model = item.mediaUrl,
@@ -506,27 +465,28 @@ fun TikTokFeedCard(
                         .background(
                             Brush.verticalGradient(
                                 colors = listOf(
-                                    Color.Black.copy(alpha = 0.2f),
+                                    Color.Black.copy(alpha = 0.15f),
                                     Color.Transparent,
-                                    CanvasDark.copy(alpha = 0.95f)
+                                    Color.Black.copy(alpha = 0.90f)
                                 )
                             )
                         )
                 )
 
-                // Center Play Button with glowing aura
+                // Center Play Button with glass aura
                 Box(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .size(56.dp)
+                        .size(54.dp)
                         .clip(CircleShape)
-                        .background(PrimaryContainerViolet.copy(alpha = 0.88f)),
+                        .background(Color.White.copy(alpha = 0.25f))
+                        .border(1.dp, Color.White.copy(alpha = 0.5f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Filled.PlayArrow,
                         contentDescription = "تشغيل",
-                        tint = OnPrimaryContainerViolet,
+                        tint = Color.White,
                         modifier = Modifier.size(32.dp)
                     )
                 }
@@ -564,7 +524,7 @@ fun TikTokFeedCard(
                                 Icon(
                                     imageVector = if (item.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                                     contentDescription = "إعجاب",
-                                    tint = if (item.isLiked) ColorPlatformInstagram else Color.White,
+                                    tint = if (item.isLiked) AppleSystemRed else Color.White,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
@@ -589,36 +549,20 @@ fun TikTokFeedCard(
                                     color = Color.White
                                 )
                             }
-                            item.sharesCount?.let {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Share,
-                                        contentDescription = "مشاركة",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = Color.White
-                                    )
-                                }
-                            }
                         }
 
                         item.videoDuration?.let {
-                            Surface(
-                                color = Color.Black.copy(alpha = 0.55f),
-                                shape = RoundedCornerShape(6.dp)
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(Color.Black.copy(alpha = 0.60f))
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
                             ) {
                                 Text(
                                     text = it,
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = ColorPlatformTikTok,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                    color = Color.White,
+                                    fontSize = 11.sp
                                 )
                             }
                         }
@@ -632,26 +576,27 @@ fun TikTokFeedCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Surface(
-                    color = SurfaceContainer,
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.clickable { onToggleSave() }
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(if (item.isSaved) AppleSystemBlue.copy(alpha = 0.15f) else AppleSystemGray5)
+                        .clickable { onToggleSave() }
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Icon(
                             imageVector = if (item.isSaved) Icons.Filled.Bookmark else Icons.Outlined.BookmarkAdd,
                             contentDescription = null,
-                            tint = PrimaryContainerViolet,
-                            modifier = Modifier.size(16.dp)
+                            tint = if (item.isSaved) AppleSystemBlue else AppleSystemGray,
+                            modifier = Modifier.size(15.dp)
                         )
                         Text(
-                            text = if (item.isSaved) "محفوظ بالفهرس" else "حفظ للفهرس",
+                            text = if (item.isSaved) "محفوظ" else "حفظ",
                             style = MaterialTheme.typography.labelSmall,
-                            color = OnSurfaceDark
+                            color = if (item.isSaved) AppleSystemBlue else Color.White
                         )
                     }
                 }
@@ -664,13 +609,13 @@ fun TikTokFeedCard(
                     Text(
                         text = "فتح في TikTok",
                         style = MaterialTheme.typography.labelSmall,
-                        color = OnSurfaceVariantDark
+                        color = AppleSystemGray
                     )
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = null,
-                        tint = OnSurfaceVariantDark,
-                        modifier = Modifier.size(14.dp)
+                        tint = AppleSystemGray,
+                        modifier = Modifier.size(13.dp)
                     )
                 }
             }
@@ -688,7 +633,7 @@ fun XPostFeedCard(
         modifier = Modifier
             .fillMaxWidth()
             .testTag("feed_item_x"),
-        backgroundColor = GlassSurfaceDark
+        backgroundColor = AppleSystemGray6
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -709,8 +654,9 @@ fun XPostFeedCard(
                         contentDescription = item.authorName,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(42.dp)
+                            .size(40.dp)
                             .clip(CircleShape)
+                            .border(0.5.dp, GlassBorderSubtle, CircleShape)
                     )
                     Column {
                         Row(
@@ -721,71 +667,56 @@ fun XPostFeedCard(
                                 text = item.authorName,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                color = OnSurfaceDark
+                                color = Color.White
                             )
                             Text(
                                 text = "𝕏",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = OnSurfaceDark
+                                color = Color.White
                             )
                         }
                         Text(
                             text = item.authorHandle,
                             style = MaterialTheme.typography.labelSmall,
-                            color = OnSurfaceVariantDark
+                            color = AppleSystemGray
                         )
                     }
                 }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                IconButton(
+                    onClick = { },
+                    modifier = Modifier.size(32.dp)
                 ) {
-                    item.trendingBadge?.let {
-                        Surface(
-                            color = SurfaceContainer,
-                            shape = CircleShape
-                        ) {
-                            Text(
-                                text = it,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = OnSurfaceVariantDark,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
-                            )
-                        }
-                    }
-                    IconButton(
-                        onClick = { },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.MoreHoriz,
-                            contentDescription = "المزيد",
-                            tint = OnSurfaceVariantDark,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Filled.MoreHoriz,
+                        contentDescription = "المزيد",
+                        tint = AppleSystemGray,
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
             }
 
-            // Analytical Arabic Text
+            // Text
             Text(
                 text = item.contentText,
                 style = MaterialTheme.typography.bodyLarge,
-                color = OnSurfaceDark,
+                color = Color.White,
                 lineHeight = 24.sp
             )
 
             // Quote Metric Micro-Badge
             item.quoteMetricBadge?.let { quoteBadge ->
-                Surface(
-                    color = SurfaceContainer,
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(AppleSystemGray5)
+                        .border(0.5.dp, GlassBorderSubtle, RoundedCornerShape(12.dp))
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 9.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -796,20 +727,20 @@ fun XPostFeedCard(
                             Icon(
                                 imageVector = Icons.Filled.AutoGraph,
                                 contentDescription = null,
-                                tint = PrimaryContainerViolet,
-                                modifier = Modifier.size(18.dp)
+                                tint = AppleSystemBlue,
+                                modifier = Modifier.size(16.dp)
                             )
                             Text(
                                 text = quoteBadge,
                                 style = MaterialTheme.typography.labelSmall,
-                                color = OnSurfaceDark
+                                color = Color.White
                             )
                         }
                         item.quoteActionLabel?.let { actionLabel ->
                             Text(
                                 text = actionLabel,
                                 style = MaterialTheme.typography.labelSmall,
-                                color = PrimaryContainerViolet,
+                                color = AppleSystemBlue,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -817,11 +748,11 @@ fun XPostFeedCard(
                 }
             }
 
-            // Interaction Bar (X Style)
+            // Interaction Bar (iOS Style with Apple Grays & Accents)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp),
+                    .padding(top = 2.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -832,13 +763,13 @@ fun XPostFeedCard(
                     Icon(
                         imageVector = Icons.Outlined.Chat,
                         contentDescription = "رد",
-                        tint = OnSurfaceVariantDark,
+                        tint = AppleSystemGray,
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
                         text = item.commentsCount,
                         style = MaterialTheme.typography.labelSmall,
-                        color = OnSurfaceVariantDark
+                        color = AppleSystemGray
                     )
                 }
 
@@ -849,13 +780,13 @@ fun XPostFeedCard(
                     Icon(
                         imageVector = Icons.Outlined.Repeat,
                         contentDescription = "إعادة نشر",
-                        tint = OnSurfaceVariantDark,
+                        tint = AppleSystemGray,
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
                         text = item.sharesCount ?: "0",
                         style = MaterialTheme.typography.labelSmall,
-                        color = OnSurfaceVariantDark
+                        color = AppleSystemGray
                     )
                 }
 
@@ -867,33 +798,14 @@ fun XPostFeedCard(
                     Icon(
                         imageVector = if (item.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                         contentDescription = "إعجاب",
-                        tint = if (item.isLiked) ColorPlatformInstagram else OnSurfaceVariantDark,
+                        tint = if (item.isLiked) AppleSystemRed else AppleSystemGray,
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
                         text = item.likesCount,
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (item.isLiked) ColorPlatformInstagram else OnSurfaceVariantDark
+                        color = if (item.isLiked) AppleSystemRed else AppleSystemGray
                     )
-                }
-
-                item.impressionsCount?.let {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Analytics,
-                            contentDescription = "مشاهدات",
-                            tint = OnSurfaceVariantDark,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Text(
-                            text = it,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = OnSurfaceVariantDark
-                        )
-                    }
                 }
 
                 IconButton(
@@ -901,9 +813,9 @@ fun XPostFeedCard(
                     modifier = Modifier.size(32.dp)
                 ) {
                     Icon(
-                        imageVector = if (item.isSaved) Icons.Filled.Bookmark else Icons.Outlined.Share,
-                        contentDescription = "مشاركة أو حفظ",
-                        tint = if (item.isSaved) PrimaryContainerViolet else OnSurfaceVariantDark,
+                        imageVector = if (item.isSaved) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
+                        contentDescription = "حفظ",
+                        tint = if (item.isSaved) AppleSystemBlue else AppleSystemGray,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -922,7 +834,7 @@ fun YouTubeFeedCard(
         modifier = Modifier
             .fillMaxWidth()
             .testTag("feed_item_youtube"),
-        backgroundColor = GlassSurfaceDark
+        backgroundColor = AppleSystemGray6
     ) {
         Column(
             modifier = Modifier.padding(14.dp),
@@ -938,7 +850,7 @@ fun YouTubeFeedCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Box(modifier = Modifier.size(42.dp)) {
+                    Box(modifier = Modifier.size(40.dp)) {
                         AsyncImage(
                             model = item.authorAvatarUrl,
                             contentDescription = item.authorName,
@@ -950,7 +862,7 @@ fun YouTubeFeedCard(
                         Box(
                             modifier = Modifier
                                 .align(Alignment.BottomStart)
-                                .size(16.dp)
+                                .size(15.dp)
                                 .clip(CircleShape)
                                 .background(ColorPlatformYouTube),
                             contentAlignment = Alignment.Center
@@ -959,7 +871,7 @@ fun YouTubeFeedCard(
                                 imageVector = Icons.Filled.PlayArrow,
                                 contentDescription = null,
                                 tint = Color.White,
-                                modifier = Modifier.size(10.dp)
+                                modifier = Modifier.size(9.dp)
                             )
                         }
                     }
@@ -973,7 +885,7 @@ fun YouTubeFeedCard(
                                 text = item.authorName,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                color = OnSurfaceDark
+                                color = Color.White
                             )
                             if (item.isVerified) {
                                 Icon(
@@ -987,32 +899,23 @@ fun YouTubeFeedCard(
                         Text(
                             text = item.authorHandle,
                             style = MaterialTheme.typography.labelSmall,
-                            color = OnSurfaceVariantDark
+                            color = AppleSystemGray
                         )
                     }
                 }
 
-                Surface(
-                    color = Color(0xFF450A0A),
-                    shape = CircleShape
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(ColorPlatformYouTube.copy(alpha = 0.15f))
+                        .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(6.dp)
-                                .clip(CircleShape)
-                                .background(ColorPlatformYouTube)
-                        )
-                        Text(
-                            text = "فيديو كامل",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color(0xFFF87171)
-                        )
-                    }
+                    Text(
+                        text = "فيديو كامل",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = ColorPlatformYouTube,
+                        fontSize = 11.sp
+                    )
                 }
             }
 
@@ -1021,8 +924,9 @@ fun YouTubeFeedCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(16f / 9f)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(SurfaceContainerHighest)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(AppleSystemGray5)
+                    .border(0.5.dp, GlassBorderSubtle, RoundedCornerShape(16.dp))
             ) {
                 AsyncImage(
                     model = item.mediaUrl,
@@ -1031,50 +935,22 @@ fun YouTubeFeedCard(
                     modifier = Modifier.fillMaxSize()
                 )
 
-                // 4K Stamp
-                item.resolutionBadge?.let { res ->
-                    Surface(
-                        color = CanvasDark.copy(alpha = 0.8f),
-                        shape = RoundedCornerShape(6.dp),
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(8.dp)
-                    ) {
-                        Text(
-                            text = res,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = OnSurfaceVariantDark,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                        )
-                    }
-                }
-
                 // Duration badge
                 item.videoDuration?.let { duration ->
-                    Surface(
-                        color = CanvasDark.copy(alpha = 0.85f),
-                        shape = RoundedCornerShape(6.dp),
+                    Box(
                         modifier = Modifier
                             .align(Alignment.BottomStart)
                             .padding(8.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(Color.Black.copy(alpha = 0.75f))
+                            .padding(horizontal = 7.dp, vertical = 2.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Timer,
-                                contentDescription = null,
-                                tint = ColorPlatformYouTube,
-                                modifier = Modifier.size(12.dp)
-                            )
-                            Text(
-                                text = duration,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Color.White
-                            )
-                        }
+                        Text(
+                            text = duration,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White,
+                            fontSize = 11.sp
+                        )
                     }
                 }
 
@@ -1098,23 +974,12 @@ fun YouTubeFeedCard(
 
             // Title and Details
             Text(
-                text = "المقارنة الشاملة: هل يستحق حاسوب الذكاء الاصطناعي المحلي الترقية في 2025؟",
+                text = item.contentText,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = OnSurfaceDark,
-                lineHeight = 24.sp
+                color = Color.White,
+                lineHeight = 22.sp
             )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(text = "43 ألف مشاهدة", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariantDark)
-                Text(text = "•", color = OnSurfaceVariantDark)
-                Text(text = "منذ 5 ساعات", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariantDark)
-                Text(text = "•", color = OnSurfaceVariantDark)
-                Text(text = "98% تقييم إيجابي", style = MaterialTheme.typography.labelSmall, color = Color(0xFF34D399))
-            }
 
             // Action Row
             Row(
@@ -1126,42 +991,32 @@ fun YouTubeFeedCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Surface(
-                        color = SurfaceContainer,
-                        shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier.clickable { onToggleSave() }
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(if (item.isSaved) AppleSystemBlue.copy(alpha = 0.15f) else AppleSystemGray5)
+                            .clickable { onToggleSave() }
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.PlaylistAdd,
-                                contentDescription = null,
-                                tint = ColorPlatformYouTube,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Text(
-                                text = "المشاهدة لاحقاً",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = OnSurfaceDark
-                            )
-                        }
+                        Text(
+                            text = if (item.isSaved) "محفوظ للمشاهدة" else "المشاهدة لاحقاً",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (item.isSaved) AppleSystemBlue else Color.White
+                        )
                     }
 
                     IconButton(
                         onClick = onToggleLike,
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(34.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(SurfaceContainer)
+                            .background(AppleSystemGray5)
                     ) {
                         Icon(
                             imageVector = if (item.isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
                             contentDescription = "إعجاب",
-                            tint = if (item.isLiked) PrimaryContainerViolet else OnSurfaceVariantDark,
-                            modifier = Modifier.size(18.dp)
+                            tint = if (item.isLiked) AppleSystemBlue else AppleSystemGray,
+                            modifier = Modifier.size(17.dp)
                         )
                     }
                 }
@@ -1172,15 +1027,15 @@ fun YouTubeFeedCard(
                     modifier = Modifier.clickable { }
                 ) {
                     Text(
-                        text = "عرض الوصف والروابط",
+                        text = "فتح في YouTube",
                         style = MaterialTheme.typography.labelSmall,
-                        color = PrimaryContainerViolet
+                        color = AppleSystemGray
                     )
                     Icon(
-                        imageVector = Icons.Default.ExpandMore,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = null,
-                        tint = PrimaryContainerViolet,
-                        modifier = Modifier.size(14.dp)
+                        tint = AppleSystemGray,
+                        modifier = Modifier.size(13.dp)
                     )
                 }
             }
@@ -1200,7 +1055,7 @@ fun InstagramFeedCard(
         modifier = Modifier
             .fillMaxWidth()
             .testTag("feed_item_instagram"),
-        backgroundColor = GlassSurfaceDark
+        backgroundColor = AppleSystemGray6
     ) {
         Column(
             modifier = Modifier.padding(14.dp),
@@ -1218,11 +1073,11 @@ fun InstagramFeedCard(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(42.dp)
+                            .size(40.dp)
                             .clip(CircleShape)
                             .border(
                                 1.5.dp,
-                                Brush.linearGradient(listOf(Color(0xFFF59E0B), ColorPlatformInstagram, PrimaryContainerViolet)),
+                                Brush.linearGradient(listOf(Color(0xFFF59E0B), ColorPlatformInstagram, AppleSystemPurple)),
                                 CircleShape
                             )
                             .padding(2.dp)
@@ -1246,13 +1101,13 @@ fun InstagramFeedCard(
                                 text = item.authorName,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                color = OnSurfaceDark
+                                color = Color.White
                             )
                             if (item.isVerified) {
                                 Icon(
                                     imageVector = Icons.Filled.Verified,
                                     contentDescription = "موثق",
-                                    tint = ColorPlatformInstagram,
+                                    tint = AppleSystemBlue,
                                     modifier = Modifier.size(14.dp)
                                 )
                             }
@@ -1260,7 +1115,7 @@ fun InstagramFeedCard(
                         Text(
                             text = item.authorHandle,
                             style = MaterialTheme.typography.labelSmall,
-                            color = OnSurfaceVariantDark
+                            color = AppleSystemGray
                         )
                     }
                 }
@@ -1270,9 +1125,9 @@ fun InstagramFeedCard(
                     modifier = Modifier.size(32.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.MoreVert,
+                        imageVector = Icons.Filled.MoreHoriz,
                         contentDescription = "خيارات",
-                        tint = OnSurfaceVariantDark,
+                        tint = AppleSystemGray,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -1285,8 +1140,9 @@ fun InstagramFeedCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(SurfaceContainerHighest)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(AppleSystemGray5)
+                    .border(0.5.dp, GlassBorderSubtle, RoundedCornerShape(18.dp))
             ) {
                 AsyncImage(
                     model = currentImageUrl,
@@ -1296,33 +1152,23 @@ fun InstagramFeedCard(
                 )
 
                 // Slide Indicator Tag (Top Left)
-                Surface(
-                    color = CanvasDark.copy(alpha = 0.75f),
-                    shape = CircleShape,
+                Box(
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(10.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.Black.copy(alpha = 0.65f))
+                        .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Text(
-                            text = "${item.currentSlideIndex + 1} / ${item.carouselImages.size}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = OnSurfaceDark
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Collections,
-                            contentDescription = null,
-                            tint = ColorPlatformInstagram,
-                            modifier = Modifier.size(13.dp)
-                        )
-                    }
+                    Text(
+                        text = "${item.currentSlideIndex + 1} / ${item.carouselImages.size}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White,
+                        fontSize = 11.sp
+                    )
                 }
 
-                // Prev & Next Quick Clickable Controls
+                // Prev & Next Controls
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -1335,7 +1181,7 @@ fun InstagramFeedCard(
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(CanvasDark.copy(alpha = 0.6f))
+                            .background(Color.Black.copy(alpha = 0.5f))
                     ) {
                         Icon(
                             imageVector = Icons.Default.ChevronRight,
@@ -1350,7 +1196,7 @@ fun InstagramFeedCard(
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(CanvasDark.copy(alpha = 0.6f))
+                            .background(Color.Black.copy(alpha = 0.5f))
                     ) {
                         Icon(
                             imageVector = Icons.Default.ChevronLeft,
@@ -1373,10 +1219,10 @@ fun InstagramFeedCard(
                         val isCurrent = index == item.currentSlideIndex
                         Box(
                             modifier = Modifier
-                                .height(6.dp)
-                                .width(if (isCurrent) 18.dp else 6.dp)
+                                .height(5.dp)
+                                .width(if (isCurrent) 16.dp else 5.dp)
                                 .clip(CircleShape)
-                                .background(if (isCurrent) PrimaryContainerViolet else Color.White.copy(alpha = 0.4f))
+                                .background(if (isCurrent) AppleSystemBlue else Color.White.copy(alpha = 0.4f))
                         )
                     }
                 }
@@ -1399,7 +1245,7 @@ fun InstagramFeedCard(
                         Icon(
                             imageVector = if (item.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                             contentDescription = "إعجاب",
-                            tint = if (item.isLiked) ColorPlatformInstagram else OnSurfaceDark,
+                            tint = if (item.isLiked) AppleSystemRed else Color.White,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -1410,7 +1256,7 @@ fun InstagramFeedCard(
                         Icon(
                             imageVector = Icons.Outlined.ModeComment,
                             contentDescription = "تعليق",
-                            tint = OnSurfaceDark,
+                            tint = Color.White,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -1421,7 +1267,7 @@ fun InstagramFeedCard(
                         Icon(
                             imageVector = Icons.Outlined.Send,
                             contentDescription = "إرسال",
-                            tint = OnSurfaceDark,
+                            tint = Color.White,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -1434,7 +1280,7 @@ fun InstagramFeedCard(
                     Icon(
                         imageVector = if (item.isSaved) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
                         contentDescription = "حفظ",
-                        tint = if (item.isSaved) PrimaryContainerViolet else OnSurfaceDark,
+                        tint = if (item.isSaved) AppleSystemBlue else Color.White,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -1443,23 +1289,23 @@ fun InstagramFeedCard(
             // Likes and Caption
             Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
                 Text(
-                    text = "أعجب به فهد التميمي و ${item.likesCount} آخرين",
+                    text = "${item.likesCount} إعجاب",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = OnSurfaceDark
+                    color = Color.White
                 )
 
                 Text(
                     text = "${item.authorName}  ${item.contentText}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = OnSurfaceVariantDark,
+                    color = AppleSystemGray,
                     lineHeight = 22.sp
                 )
 
                 Text(
                     text = "عرض جميع التعليقات الـ ${item.commentsCount}",
                     style = MaterialTheme.typography.labelSmall,
-                    color = OutlineDark,
+                    color = AppleSystemGray2,
                     modifier = Modifier
                         .clickable { }
                         .padding(top = 2.dp)

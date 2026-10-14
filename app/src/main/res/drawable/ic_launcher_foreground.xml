@@ -3,6 +3,6 @@
     <item
         android:width="66dp"
         android:height="66dp"
-        android:drawable="@drawable/socialhub_launcher_icon_1791699367512"
+        android:drawable="@drawable/socialhub_app_icon_v2_1792010988224"
         android:gravity="center" />
 </layer-list>

@@ -1,6 +1,5 @@
 package com.example.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -8,83 +7,65 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val SocialHubDarkColorScheme = darkColorScheme(
-    primary = PrimaryViolet,
-    onPrimary = OnPrimaryViolet,
-    primaryContainer = PrimaryContainerViolet,
-    onPrimaryContainer = OnPrimaryContainerViolet,
-    secondary = Color(0xFFC3C6D5),
-    onSecondary = Color(0xFF2C303C),
-    secondaryContainer = Color(0xFF434653),
-    onSecondaryContainer = Color(0xFFB1B4C3),
-    tertiary = StatusWarning,
-    onTertiary = Color(0xFF373100),
-    tertiaryContainer = Color(0xFFAF9E00),
-    onTertiaryContainer = Color(0xFF3B3500),
+    primary = AppleSystemBlue,
+    onPrimary = Color.White,
+    primaryContainer = AppleSystemBlue,
+    onPrimaryContainer = Color.White,
+    secondary = AppleSystemGray,
+    onSecondary = Color.Black,
+    secondaryContainer = AppleSystemGray5,
+    onSecondaryContainer = Color.White,
+    tertiary = AppleSystemGreen,
+    onTertiary = Color.Black,
+    tertiaryContainer = AppleSystemGray4,
+    onTertiaryContainer = Color.White,
     background = CanvasDark,
     onBackground = OnSurfaceDark,
-    surface = CanvasDark,
+    surface = AppleSystemGray6,
     onSurface = OnSurfaceDark,
-    surfaceVariant = SurfaceContainerHighest,
+    surfaceVariant = AppleSystemGray5,
     onSurfaceVariant = OnSurfaceVariantDark,
     outline = OutlineDark,
     outlineVariant = OutlineVariantDark,
     error = StatusError,
-    onError = Color(0xFF690005),
+    onError = Color.White,
     errorContainer = StatusErrorContainer,
-    onErrorContainer = Color(0xFFFFDAD6)
+    onErrorContainer = Color.White
 )
 
-val SocialHubAmoledColorScheme = darkColorScheme(
-    primary = PrimaryViolet,
-    onPrimary = OnPrimaryViolet,
-    primaryContainer = PrimaryContainerViolet,
-    onPrimaryContainer = OnPrimaryContainerViolet,
-    secondary = Color(0xFFC3C6D5),
-    onSecondary = Color(0xFF2C303C),
-    secondaryContainer = Color(0xFF282A2F),
-    onSecondaryContainer = Color(0xFFB1B4C3),
-    tertiary = StatusWarning,
-    onTertiary = Color(0xFF373100),
-    background = CanvasAmoled,
-    onBackground = OnSurfaceDark,
-    surface = CanvasAmoled,
-    onSurface = OnSurfaceDark,
-    surfaceVariant = SurfaceContainerHigh,
-    onSurfaceVariant = OnSurfaceVariantDark,
-    outline = OutlineDark,
-    outlineVariant = OutlineVariantDark,
-    error = StatusError,
-    onError = Color(0xFF690005)
+val SocialHubAmoledColorScheme = SocialHubDarkColorScheme.copy(
+    background = CanvasDark,
+    surface = AppleSystemGray6
 )
 
 val SocialHubLightColorScheme = lightColorScheme(
-    primary = Color(0xFF6A4EB8),
+    primary = AppleSystemBlue,
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFE8DDFF),
-    onPrimaryContainer = Color(0xFF21005E),
-    secondary = Color(0xFF5B5D6B),
+    primaryContainer = Color(0xFFE5F1FF),
+    onPrimaryContainer = AppleSystemBlue,
+    secondary = AppleSystemGray,
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFDFE2F1),
-    onSecondaryContainer = Color(0xFF171B26),
-    tertiary = Color(0xFF6F6400),
+    secondaryContainer = Color(0xFFE5E5EA),
+    onSecondaryContainer = Color.Black,
+    tertiary = AppleSystemGreen,
     onTertiary = Color.White,
     background = CanvasLight,
-    onBackground = Color(0xFF1A1B21),
+    onBackground = Color.Black,
     surface = Color.White,
-    onSurface = Color(0xFF1A1B21),
-    surfaceVariant = Color(0xFFE3E2E9),
-    onSurfaceVariant = Color(0xFF45464F),
-    outline = Color(0xFF767680)
+    onSurface = Color.Black,
+    surfaceVariant = Color(0xFFE5E5EA),
+    onSurfaceVariant = AppleSystemGray,
+    outline = Color(0xFFC7C7CC),
+    outlineVariant = Color(0xFFE5E5EA)
 )
 
 @Composable
 fun MyApplicationTheme(
     themeMode: String = "dark",
-    customAccent: Color = PrimaryContainerViolet,
+    customAccent: Color = AppleSystemBlue,
     content: @Composable () -> Unit
 ) {
     val baseScheme = when (themeMode) {
-        "amoled" -> SocialHubAmoledColorScheme
         "light" -> SocialHubLightColorScheme
         else -> SocialHubDarkColorScheme
     }

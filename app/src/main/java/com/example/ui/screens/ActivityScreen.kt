@@ -1,9 +1,7 @@
 package com.example.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import com.example.ui.components.GlassCard
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -15,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,6 +28,8 @@ import coil.compose.AsyncImage
 import com.example.model.ActivityItem
 import com.example.model.ActivityTab
 import com.example.model.PlatformType
+import com.example.ui.components.CupertinoSegmentedControl
+import com.example.ui.components.GlassCard
 import com.example.ui.theme.*
 
 @Composable
@@ -54,122 +53,88 @@ fun ActivityScreen(
         modifier = modifier
             .fillMaxSize()
             .testTag("activity_screen_list"),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 82.dp, bottom = 104.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        // 1. Header Area
+        // 1. iOS Large Title & Action Header
         item {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 2.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(top = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "النشاط الموحد",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = OnSurfaceDark
-                    )
-                    if (unreadCount > 0) {
-                        Surface(
-                            color = PrimaryContainerViolet.copy(alpha = 0.2f),
-                            shape = CircleShape
-                        ) {
-                            Text(
-                                text = "$unreadCount جديدة",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = PrimaryContainerViolet,
-                                fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                            )
-                        }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .clickable { onMarkAllRead() }
-                        .padding(horizontal = 4.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.DoneAll,
-                        contentDescription = "قراءة الكل",
-                        tint = OnSurfaceVariantDark,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Text(
-                        text = "قراءة الكل",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = OnSurfaceVariantDark
-                    )
-                }
-            }
-        }
-
-        // 2. Primary Sub-navigation Tabs
-        item {
-            Surface(
-                color = GlassSurfacePill,
-                shape = RoundedCornerShape(14.dp),
-                border = BorderStroke(0.5.dp, GlassBorderSubtle),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    ActivityTab.entries.forEach { tab ->
-                        val isSelected = currentTab == tab
-                        val icon = when (tab) {
-                            ActivityTab.NOTIFICATIONS -> Icons.Filled.Notifications
-                            ActivityTab.INTERACTIONS -> Icons.Filled.Forum
-                            ActivityTab.HISTORY -> Icons.Filled.History
-                            ActivityTab.ACCOUNTS -> Icons.Filled.Link
-                        }
-
-                        Surface(
-                            color = if (isSelected) SurfaceContainerHigh else Color.Transparent,
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable { onTabSelected(tab) }
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(vertical = 8.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "النشاط الموحد",
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            letterSpacing = (-0.5).sp
+                        )
+                        if (unreadCount > 0) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(AppleSystemBlue.copy(alpha = 0.15f))
+                                    .padding(horizontal = 8.dp, vertical = 3.dp)
                             ) {
-                                Icon(
-                                    imageVector = icon,
-                                    contentDescription = tab.title,
-                                    tint = if (isSelected) PrimaryContainerViolet else OnSurfaceVariantDark,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = tab.title,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = if (isSelected) PrimaryContainerViolet else OnSurfaceVariantDark,
-                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                                    text = "$unreadCount جديدة",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = AppleSystemBlue,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 11.sp
                                 )
                             }
                         }
                     }
+
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(AppleSystemGray6)
+                            .border(0.5.dp, GlassBorderSubtle, RoundedCornerShape(10.dp))
+                            .clickable { onMarkAllRead() }
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.DoneAll,
+                            contentDescription = "قراءة الكل",
+                            tint = AppleSystemBlue,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = "قراءة الكل",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = AppleSystemBlue,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
+
+                // 2. iOS Segmented Control for Activity Tabs
+                CupertinoSegmentedControl(
+                    items = ActivityTab.entries,
+                    selectedItem = currentTab,
+                    onItemSelected = onTabSelected,
+                    itemLabel = { it.title },
+                    itemTagPrefix = "activity_tab"
+                )
             }
         }
 
-        // 3. Source Filter Pills
+        // 3. Platform Filter Strip
         item {
             Row(
                 modifier = Modifier
@@ -177,35 +142,40 @@ fun ActivityScreen(
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                ActivityFilterPill(
-                    label = "الكل",
-                    isSelected = selectedFilter == PlatformType.ALL,
-                    onClick = { onFilterSelected(PlatformType.ALL) }
-                )
-                ActivityFilterPill(
-                    label = "X",
-                    isSelected = selectedFilter == PlatformType.X,
-                    onClick = { onFilterSelected(PlatformType.X) }
-                )
-                ActivityFilterPill(
-                    label = "Instagram",
-                    isSelected = selectedFilter == PlatformType.INSTAGRAM,
-                    onClick = { onFilterSelected(PlatformType.INSTAGRAM) }
-                )
-                ActivityFilterPill(
-                    label = "YouTube",
-                    isSelected = selectedFilter == PlatformType.YOUTUBE,
-                    onClick = { onFilterSelected(PlatformType.YOUTUBE) }
-                )
-                ActivityFilterPill(
-                    label = "TikTok",
-                    isSelected = selectedFilter == PlatformType.TIKTOK,
-                    onClick = { onFilterSelected(PlatformType.TIKTOK) }
-                )
+                listOf(
+                    Pair(PlatformType.ALL, "الكل"),
+                    Pair(PlatformType.X, "𝕏"),
+                    Pair(PlatformType.INSTAGRAM, "Instagram"),
+                    Pair(PlatformType.YOUTUBE, "YouTube"),
+                    Pair(PlatformType.TIKTOK, "TikTok")
+                ).forEach { (type, label) ->
+                    val isSelected = selectedFilter == type
+                    Box(
+                        modifier = Modifier
+                            .height(34.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(if (isSelected) AppleSystemBlue else AppleSystemGray6)
+                            .border(
+                                0.5.dp,
+                                if (isSelected) Color.Transparent else GlassBorderSubtle,
+                                RoundedCornerShape(10.dp)
+                            )
+                            .clickable { onFilterSelected(type) }
+                            .padding(horizontal = 12.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
+                            color = if (isSelected) Color.White else AppleSystemGray
+                        )
+                    }
+                }
             }
         }
 
-        // 4. Activity Stream Feed Cards
+        // 4. Activity Items List (iOS Inset Style)
         items(filteredItems, key = { it.id }) { item ->
             ActivityCard(
                 item = item,
@@ -219,56 +189,21 @@ fun ActivityScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp),
+                    .padding(vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Box(
                     modifier = Modifier
-                        .width(40.dp)
+                        .width(36.dp)
                         .height(3.dp)
                         .clip(CircleShape)
-                        .background(SurfaceContainerHigh)
+                        .background(AppleSystemGray5)
                 )
                 Text(
                     text = "أنت على اطلاع بكل جديد في مساحتك",
                     style = MaterialTheme.typography.labelSmall,
-                    color = OnSurfaceVariantDark
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ActivityFilterPill(
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Surface(
-        color = if (isSelected) PrimaryContainerViolet else GlassSurfacePill,
-        shape = CircleShape,
-        border = BorderStroke(0.5.dp, if (isSelected) GlassBorder else GlassBorderSubtle),
-        modifier = Modifier.clickable(onClick = onClick)
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                color = if (isSelected) OnPrimaryContainerViolet else OnSurfaceVariantDark
-            )
-            if (isSelected) {
-                Box(
-                    modifier = Modifier
-                        .size(5.dp)
-                        .clip(CircleShape)
-                        .background(OnPrimaryContainerViolet)
+                    color = AppleSystemGray
                 )
             }
         }
@@ -282,15 +217,15 @@ fun ActivityCard(
     onSecondaryAction: () -> Unit
 ) {
     GlassCard(
-        shape = RoundedCornerShape(18.dp),
-        backgroundColor = GlassSurfaceDark,
+        shape = RoundedCornerShape(20.dp),
+        backgroundColor = AppleSystemGray6,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Header Row
+            // Header Row: Avatar, Name, Platform tag, Unread Indicator
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -301,7 +236,7 @@ fun ActivityCard(
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     if (item.avatarUrl != null) {
-                        Box(modifier = Modifier.size(42.dp)) {
+                        Box(modifier = Modifier.size(40.dp)) {
                             AsyncImage(
                                 model = item.avatarUrl,
                                 contentDescription = item.authorName,
@@ -309,108 +244,59 @@ fun ActivityCard(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .clip(CircleShape)
+                                    .border(0.5.dp, GlassBorderSubtle, CircleShape)
                             )
-                            val badgeText = when (item.platformType) {
-                                PlatformType.X -> "𝕏"
-                                PlatformType.INSTAGRAM -> "IG"
-                                PlatformType.TIKTOK -> "TT"
-                                PlatformType.YOUTUBE -> "YT"
-                                else -> "•"
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.BottomStart)
-                                    .size(16.dp)
-                                    .clip(CircleShape)
-                                    .background(SurfaceContainerHighest),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = badgeText,
-                                    fontSize = 8.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = OnSurfaceDark
-                                )
-                            }
                         }
                     } else {
-                        val icon = when {
-                            item.isSystemNotification -> Icons.Default.Sync
-                            item.platformType == PlatformType.YOUTUBE -> Icons.Default.SmartDisplay
-                            item.platformType == PlatformType.TIKTOK -> Icons.Default.TrendingUp
-                            else -> Icons.Default.Notifications
-                        }
-                        val tint = when {
-                            item.isSystemNotification -> PrimaryContainerViolet
-                            item.platformType == PlatformType.YOUTUBE -> ColorPlatformYouTube
-                            item.platformType == PlatformType.TIKTOK -> ColorPlatformTikTok
-                            else -> PrimaryContainerViolet
-                        }
-
                         Box(
                             modifier = Modifier
-                                .size(42.dp)
+                                .size(40.dp)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(SurfaceContainerHighest),
+                                .background(AppleSystemGray5),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(imageVector = icon, contentDescription = null, tint = tint, modifier = Modifier.size(22.dp))
+                            Icon(
+                                imageVector = Icons.Default.Notifications,
+                                contentDescription = null,
+                                tint = AppleSystemBlue,
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
                     }
 
                     Column {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Text(
                                 text = item.authorName,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                color = OnSurfaceDark
+                                color = Color.White
                             )
                             if (item.isSystemNotification) {
-                                Surface(
-                                    color = PrimaryContainerViolet.copy(alpha = 0.25f),
-                                    shape = RoundedCornerShape(4.dp)
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(AppleSystemBlue.copy(alpha = 0.15f))
+                                        .padding(horizontal = 6.dp, vertical = 1.dp)
                                 ) {
                                     Text(
-                                        text = "تطبيق محلي",
+                                        text = "نظام",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontSize = 10.sp,
-                                        color = PrimaryContainerViolet,
-                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                                        color = AppleSystemBlue,
+                                        fontWeight = FontWeight.SemiBold
                                     )
                                 }
                             }
                         }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Text(
-                                text = when (item.platformType) {
-                                    PlatformType.X -> "منصة خارجية • 𝕏"
-                                    PlatformType.INSTAGRAM -> "منصة خارجية • Instagram"
-                                    PlatformType.YOUTUBE -> "منصة خارجية • YouTube"
-                                    PlatformType.TIKTOK -> "منصة خارجية • TikTok"
-                                    else -> "مساحة العمل • التقنية"
-                                },
-                                style = MaterialTheme.typography.labelSmall,
-                                color = when (item.platformType) {
-                                    PlatformType.YOUTUBE -> ColorPlatformYouTube
-                                    PlatformType.INSTAGRAM -> ColorPlatformInstagram
-                                    PlatformType.TIKTOK -> ColorPlatformTikTok
-                                    else -> PrimaryContainerViolet
-                                }
-                            )
-                            Box(modifier = Modifier.size(3.dp).clip(CircleShape).background(OutlineVariantDark))
-                            Text(
-                                text = item.timeAgo,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = OnSurfaceVariantDark
-                            )
-                        }
+                        Text(
+                            text = item.timeAgo,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = AppleSystemGray
+                        )
                     }
                 }
 
@@ -418,9 +304,9 @@ fun ActivityCard(
                     Box(
                         modifier = Modifier
                             .padding(top = 4.dp)
-                            .size(8.dp)
+                            .size(9.dp)
                             .clip(CircleShape)
-                            .background(PrimaryContainerViolet)
+                            .background(AppleSystemBlue)
                     )
                 }
             }
@@ -429,18 +315,19 @@ fun ActivityCard(
             Text(
                 text = item.contentText,
                 style = MaterialTheme.typography.bodyMedium,
-                color = OnSurfaceDark,
-                lineHeight = 22.sp
+                color = AppleSystemGray,
+                lineHeight = 21.sp
             )
 
-            // Optional Media Preview Thumbnail
+            // Optional Media Thumbnail
             if (item.mediaThumbnailUrl != null) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(130.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(SurfaceContainerLowest)
+                        .height(120.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(AppleSystemGray5)
+                        .border(0.5.dp, GlassBorderSubtle, RoundedCornerShape(14.dp))
                 ) {
                     AsyncImage(
                         model = item.mediaThumbnailUrl,
@@ -448,88 +335,48 @@ fun ActivityCard(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )
-
-                    item.videoDuration?.let { duration ->
-                        Surface(
-                            color = CanvasDark.copy(alpha = 0.8f),
-                            shape = RoundedCornerShape(4.dp),
-                            modifier = Modifier
-                                .align(Alignment.BottomStart)
-                                .padding(8.dp)
-                        ) {
-                            Text(
-                                text = duration,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = OnSurfaceDark,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                            )
-                        }
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(8.dp)
-                            .size(28.dp)
-                            .clip(CircleShape)
-                            .background(PrimaryContainerViolet),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = "تشغيل",
-                            tint = OnPrimaryContainerViolet,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
                 }
             }
 
-            // Actions row
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                item.actionPrimaryLabel?.let { primaryLabel ->
-                    Surface(
-                        color = SurfaceContainerHigh,
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.clickable { onPrimaryAction() }
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            val icon = when {
-                                primaryLabel.contains("رد") -> Icons.Default.Reply
-                                primaryLabel.contains("مشاهدة") -> Icons.Default.BookmarkAdd
-                                primaryLabel.contains("إعجاب") -> Icons.Default.Favorite
-                                primaryLabel.contains("تحليلات") -> Icons.Default.Insights
-                                else -> Icons.Default.Tune
+            // Action Buttons
+            if (item.actionPrimaryLabel != null || item.actionSecondaryLabel != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        item.actionSecondaryLabel?.let { label ->
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(AppleSystemGray5)
+                                    .clickable { onSecondaryAction() }
+                                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                            ) {
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.White
+                                )
                             }
-                            Icon(imageVector = icon, contentDescription = null, tint = PrimaryContainerViolet, modifier = Modifier.size(16.dp))
-                            Text(text = primaryLabel, style = MaterialTheme.typography.labelMedium, color = OnSurfaceDark)
                         }
-                    }
-                }
-
-                item.actionSecondaryLabel?.let { secondaryLabel ->
-                    Row(
-                        modifier = Modifier.clickable { onSecondaryAction() },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Text(text = secondaryLabel, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariantDark)
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
-                            tint = OnSurfaceVariantDark,
-                            modifier = Modifier.size(13.dp)
-                        )
+                        item.actionPrimaryLabel?.let { label ->
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(AppleSystemBlue)
+                                    .clickable { onPrimaryAction() }
+                                    .padding(horizontal = 14.dp, vertical = 6.dp)
+                            ) {
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.White
+                                )
+                            }
+                        }
                     }
                 }
             }
