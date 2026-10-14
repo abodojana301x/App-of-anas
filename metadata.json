@@ -1,0 +1,6 @@
+{
+  "name": "SocialHub",
+  "description": "منصة التغذية والمساحات الاجتماعية الموحدة لمتابعة وإدارة المحتوى عبر إكس وإنستغرام ويوتيوب وتيك توك وفيسبوك في تجربة رقمية هادئة وفاخرة.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
